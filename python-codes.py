@@ -69,16 +69,6 @@ def convert_ratings(dataframe):
     dataframe = dataframe[columns]
     return dataframe
 
-# def unicode_char():
-#     num = list(range(2018, 2060))
-#     encode = []
-#     for i in range(len(num)):
-#         p = r"\u" + str(num[i])
-#         encode.append(p)
-#     encode_sequence = "|".join(encode)
-#     pattern = f"""u"({encode_sequence})"""
-#     return pattern
-
 def format_num(num_str):
     return eval(num_str.replace(" ", "").replace(",", ""))
 
@@ -156,18 +146,19 @@ if __name__ == "__main__":
     url = "https://www.tripadvisor.com.sg/Hotel_Review-g294265-d1770798-Reviews-or{}-Marina_Bay_Sands-Singapore.html#REVIEWS"
     url_head = "https://www.tripadvisor.com.sg"
 
+    # change here for ad-hoc/resumed run
+    total_reviews, operated_page = 650, 1030
+    # total_reviews should be >= 60
+    
     final = []
     final_df = None
-    total_reviews_eng = 18105  # should be >= 60 # change here for ad-hoc loop
-    # original total = 19154
     review_per_page = 10
-    #total_pages = math.ceil(total_reviews_eng/review_per_page) - 1
-    total_pages = math.floor(total_reviews_eng / review_per_page)
+    total_pages = math.floor(total_reviews / review_per_page)
     last_page = total_pages
     regular_page = total_pages - 1
     range_pair = []
     groups_num = math.floor(regular_page / 5)
-    operated_page = 105 # change here for ad-hoc loop
+    starting_page = operated_page
 
     for n in range(groups_num):
         start_page = 5 * n + operated_page
@@ -272,5 +263,5 @@ if __name__ == "__main__":
         cache(final_df_clean(dataframe, col_list=["title", "content"]), "tripadvisor_mbs_review.csv", pair[1], 5) # x*10 records of reviews in each cache
     final_df = final_df_clean(dataframe, col_list=["title", "content"])
     output_dir = make_subdir("output")
-    final_df.to_csv(output_dir + f"/tripadvisor_mbs_review_page1_{total_pages}.csv", header=True, index=False)
+    final_df.to_csv(output_dir + f"/tripadvisor_mbs_review_page{starting_page}_{operated_page}.csv", header=True, index=False)
     print(f"Completed after {time.time() - start}s")
